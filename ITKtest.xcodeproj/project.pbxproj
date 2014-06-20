@@ -306,6 +306,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				66C200581952B550000FA937 /* MainNibWindowController.xib */,
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
 			);
@@ -446,7 +447,6 @@
 				66E26F291954430D0077153F /* ITKtestFilter.m */,
 				66C200561952B550000FA937 /* MainNibWindowController.h */,
 				66C200601952B9FF000FA937 /* MainNibWindowController.m */,
-				66C200581952B550000FA937 /* MainNibWindowController.xib */,
 			);
 			name = ITKtestFilter;
 			sourceTree = "<group>";

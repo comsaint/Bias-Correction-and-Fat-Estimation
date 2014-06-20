@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <OsiriXAPI/PluginFilter.h>
 
-#import "MainNibWindowController.h"
+//#import "MainNibWindowController.h"
 
 @interface ITKtestFilter : PluginFilter {
 
@@ -16,6 +16,7 @@
 
 - (ViewerController*) viewerController;
 - (long) filterImage:(NSString*) menuName;
+
 - (void) biascorrect:(ITKtestFilter*)filter;
 
 @end

@@ -6,6 +6,7 @@
 //
 
 #import "ITKtestFilter.h"
+#import "MainNibWindowController.h"
 
 #define id Id
 #include "itkImage.h"
@@ -20,14 +21,25 @@
 #define ImageDimension 3
 
 @implementation ITKtestFilter
-
+/*
 - (void) initPlugin
 {
+}
+*/
+- (ViewerController*) viewerController
+{
+    return viewerController;
 }
 
 - (long) filterImage:(NSString*) menuName
 {
-    
+    MainNibWindowController* coWin = [[MainNibWindowController alloc] init:self];
+    [coWin showWindow:self];
+    return 0;
+}
+
+- (void) biascorrect:(ITKtestFilter *)filter
+{
     typedef     float itkPixelType;
     typedef     itk::Image< itkPixelType, ImageDimension > ImageType;
     typedef     itk::ImportImageFilter< itkPixelType, ImageDimension > ImportFilterType;
@@ -81,15 +93,15 @@
     
     /*
      N4BiasCorrection - workflow:
-    1. Create a mask.
-    2. Shrink the inputImage (as well as mask) down to reduce computation time (significantly). 
-    3. Run bias correction.
-    4. Recover the bias field after bias correction.
-    5. Divide inputImage by the bias field to get the output image.
-    6. Make the size of output image identical to inputImage (otherwise Osirix will crash!)
-    */
+     1. Create a mask.
+     2. Shrink the inputImage (as well as mask) down to reduce computation time (significantly).
+     3. Run bias correction.
+     4. Recover the bias field after bias correction.
+     5. Divide inputImage by the bias field to get the output image.
+     6. Make the size of output image identical to inputImage (otherwise Osirix will crash!)
+     */
     
-
+    
     //1. Create Otsu mask
     typedef itk::Image<unsigned char, ImageDimension> MaskImageType;
     typedef typename MaskImageType::Pointer MaskImagePointer;
@@ -198,8 +210,8 @@
     logField->Allocate();
     
     itk::ImageRegionIterator<N4BiasFieldCorrectionImageFilterType::ScalarImageType> IB(
-                                                                bspliner->GetOutput(),
-                                                                bspliner->GetOutput()->GetLargestPossibleRegion() );
+                                                                                       bspliner->GetOutput(),
+                                                                                       bspliner->GetOutput()->GetLargestPossibleRegion() );
     itk::ImageRegionIterator<ImageType> IF( logField,
                                            logField->GetLargestPossibleRegion() );
     for( IB.GoToBegin(), IF.GoToBegin(); !IB.IsAtEnd(); ++IB, ++IF )
@@ -223,7 +235,7 @@
     divider->SetInput2( expFilter->GetOutput() );
     divider->Update();
     
-
+    
     
     //6. Adjust output image size by cropper
     //Crop the image
@@ -236,7 +248,7 @@
     cropper->SetExtractionRegion( inputRegion );
     cropper->SetDirectionCollapseToSubmatrix();
     cropper->Update();
-
+    
     
     
     //Output
@@ -247,8 +259,8 @@
     memcpy( [viewerController volumePtr], resultBuff, mem);
     
     [viewerController needsDisplayUpdate];
-    
-    return 0;
 }
+
+
 
 @end

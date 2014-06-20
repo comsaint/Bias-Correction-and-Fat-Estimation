@@ -15,15 +15,26 @@
 @class ViewerController;
 @class DCMPix;
 
-@interface MainNibWindowController ()
-
-@end
-
 @implementation MainNibWindowController
 
 
 - (id) init: (ITKtestFilter*) f
 {
+    self = [super initWithWindowNibName:@"MainNibWindowController"];
+    
+	//[[self window] setDelegate:self];   //In order to receive the windowWillClose notification!
+    
+    /*
+     if(!self){
+         NSRunInformationalAlertPanel(@"Hell", @"I don't know", @"Doh!", nil, nil);
+     }
+     else {
+         NSRunInformationalAlertPanel(@"Yeah", @"I know", @"OK", nil, nil);
+     };
+     */
+    
+    [self showWindow:self];
+    filter = f;
     return 0;
 }
 
@@ -71,11 +82,14 @@
              object: nil];
 }
 
-
-
 - (IBAction)update:(id)sender
 {
     [self init:filter];
+}
+
+- (IBAction)BC_button:(id)sender
+{
+    [filter biascorrect:filter];
 }
 
 - (void) closeViewer :(NSNotification*) note
