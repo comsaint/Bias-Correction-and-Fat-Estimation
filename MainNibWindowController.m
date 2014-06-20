@@ -9,8 +9,7 @@
 #import "MainNibWindowController.h"
 
 #import "ITKtestFilter.h"
-#import "BiasCorrector.h"
-#import "FatRatingCalculator.h"
+
 
 @class ROI;
 @class ViewerController;
