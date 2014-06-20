@@ -1,0 +1,6 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "ITKtest";
+CFBundleShortVersionString = "1.0";
+CFBundleGetInfoString = "ITKtest version 1.0, Copyright (c) 2014 Long.";
+NSHumanReadableCopyright = "Copyright (c) 2014 Long.";
