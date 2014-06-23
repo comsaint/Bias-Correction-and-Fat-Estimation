@@ -7,7 +7,6 @@
 //
 
 #import "MainNibWindowController.h"
-
 #import "ITKtestFilter.h"
 
 
@@ -82,6 +81,7 @@
              object: nil];
 }
 
+//
 - (IBAction)update:(id)sender
 {
     [self init:filter];
@@ -92,6 +92,35 @@
     [filter biascorrect:filter];
 }
 
+- (IBAction)calculateRating_Button:(id)sender
+{
+    //Get the roi
+    NSMutableArray		*roiSeriesList = [[filter viewerController]roiList];
+    int curslice = [[[filter viewerController] imageView]curImage];
+    NSMutableArray *roiImageList = [roiSeriesList objectAtIndex :curslice];
+    
+    // Get the pixels
+    NSArray *PixList = [[filter viewerController]pixList];
+    pix = [PixList objectAtIndex:curslice];
+    [filter Setpix:pix];
+    
+    for (int i=0; i<[roiImageList count];i++)
+    {
+        curROI = [roiImageList objectAtIndex: i];
+        if( [curROI ROImode] == ROI_selected || [curROI ROImode] == ROI_selectedModify)
+        {
+            float rating = [filter calculateRating:curROI];
+            [self->ratingOut setFloatValue:rating];
+            break;
+        }
+    }
+    
+    [self showWindow:self];
+    
+    //return 0;
+    
+}
+//
 - (void) closeViewer :(NSNotification*) note
 {
 	if( [note object] == [filter viewerController])

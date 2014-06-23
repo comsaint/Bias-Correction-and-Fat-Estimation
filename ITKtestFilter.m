@@ -261,6 +261,83 @@
     [viewerController needsDisplayUpdate];
 }
 
+-(void) Setpix:(DCMPix *)pix_in
+{
+    pix = pix_in;
+}
 
+- (float) calculateRating:(ROI*)curROI
+{
+    int num_bin = 255;
+    
+    long count=0;
+    float mean=0,dev=0,min=0,max=0;
+    float skewness;
+    
+    float** loc=nil;
+    
+    float *values = [pix getROIValue: &count :curROI :loc];
+    
+    [pix computeROI:curROI
+                   :&mean
+                   :nil    //total sum not necessary
+                   :&dev
+                   :&min
+                   :&max
+                   :&skewness
+                   :nil
+     ];
 
+    //the easiest way to normalize is to standardise the ROI to [0,255]
+
+    
+    //linear scaling
+    for (int i = 0;i<count;i++){
+        values[i] = (values[i]-min)/(max-min) * num_bin;
+    }
+    
+    double *myhistogram = (double*)calloc(num_bin, sizeof(double));
+    //Initialize: just in case...
+    for (int i =0;i<num_bin;i++){
+        myhistogram[i]=0;
+    }
+    
+    //Put values into bins
+    for (int i=0;i<count;i++){
+        for (int j=0;j<num_bin;j++){
+            if (values[i]>=j && values[i]<j+1) {
+                myhistogram[j]=myhistogram[j]+1;
+                //break;
+            }
+        }//can be rewritten into a while loop
+    }
+    //Moto of engineering: if it is not broken, don't fix it.
+    
+    // normalize the histogram to probability [0 1]
+    for (int i=0;i<num_bin;i++){
+        myhistogram[i]=(double) myhistogram[i]/count;
+    }
+    
+    //Hereforth compute rating with whatever method(s)
+    
+    //1. Simple skewness
+    // Higher skewness -> lower rating
+    float skew_list[3] = {1,2,3};//put threshold values here
+    float rating = 0.0;
+    
+    if (skewness<skew_list[0])
+    {rating = 4.0;}
+    else if (skewness<skew_list[1])
+    {rating = 3.0;}
+    else if (skewness<skew_list[2])
+    {rating = 2.0;}
+    else {rating = 1.0;}
+    
+    
+    
+    //End rating computation
+
+    
+    return rating;
+}
 @end
