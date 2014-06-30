@@ -18,6 +18,7 @@
 {
     NSButton *compute_BC;
     IBOutlet NSTextFieldCell *ratingOut;
+    IBOutlet NSTextFieldCell *skewnessOut;
     
     
     ITKtestFilter* filter;

@@ -8,6 +8,8 @@
 #import "ITKtestFilter.h"
 #import "MainNibWindowController.h"
 
+#import "math.h"
+
 #define id Id
 #include "itkImage.h"
 #include "itkImportImageFilter.h"
@@ -249,8 +251,6 @@
     cropper->SetDirectionCollapseToSubmatrix();
     cropper->Update();
     
-    
-    
     //Output
     float* resultBuff = cropper->GetOutput()->GetBufferPointer();
     
@@ -266,36 +266,68 @@
     pix = pix_in;
 }
 
+-(float) getSkewness
+{
+    return skewness;
+}
+
 - (float) calculateRating:(ROI*)curROI
 {
     int num_bin = 255;
     
     long count=0;
-    float mean=0,dev=0,min=0,max=0;
-    float skewness;
+    float min=0,max=0;
     
     float** loc=nil;
     
     float *values = [pix getROIValue: &count :curROI :loc];
     
     [pix computeROI:curROI
-                   :&mean
-                   :nil    //total sum not necessary
-                   :&dev
+                   :nil     //mean
+                   :nil     //total sum, not necessary
+                   :nil     //dev
                    :&min
                    :&max
-                   :&skewness
-                   :nil
      ];
-
-    //the easiest way to normalize is to standardise the ROI to [0,255]
+     
+    
+    //the easiest way to normalize is to standardise the ROI to [0,1]
 
     
     //linear scaling
     for (int i = 0;i<count;i++){
-        values[i] = (values[i]-min)/(max-min) * num_bin;
+        values[i] = (values[i]-min)/(max-min);
     }
     
+    //calculate mean
+    float mean = 0.0;
+    for (int i = 0;i<count;i++){
+        mean += values[i];
+    }
+    mean/=count;
+    
+    //calculate variance
+    float m2 = 0.0;//second moent, i.e. variance
+    for (int i =0;i<count;i++)
+    {
+        m2 += powf((values[i]-mean), 2);
+    }
+    m2/=count;
+    
+    //claculate skewness
+    float m3 = 0.0;//second and thrid moments
+    
+    skewness=0.0;
+    for (int i =0;i<count;i++)
+    {
+        m3 += powf((values[i]-mean), 3);
+    }
+    m3 /= count;
+    
+    skewness = m3/powf(m2, 1.5);
+    
+    
+    //Put values into histogram bins
     double *myhistogram = (double*)calloc(num_bin, sizeof(double));
     //Initialize: just in case...
     for (int i =0;i<num_bin;i++){
@@ -322,18 +354,22 @@
     
     //1. Simple skewness
     // Higher skewness -> lower rating
-    float skew_list[3] = {1,2,3};//put threshold values here
-    float rating = 0.0;
+    const unsigned int rating_levels = 5;//how many levels do we have?
+    float skew_list[rating_levels] = {3.6,3.2,2.4,2.1,1.7};//put threshold values here
+    float rating = 0.0;//default = 0 ("Not Rated")
     
-    if (skewness<skew_list[0])
-    {rating = 4.0;}
-    else if (skewness<skew_list[1])
-    {rating = 3.0;}
-    else if (skewness<skew_list[2])
+    if (skewness>skew_list[0])
+    {rating = 1.0;}
+    else if (skewness>skew_list[1])
     {rating = 2.0;}
-    else {rating = 1.0;}
-    
-    
+    else if (skewness>skew_list[2])
+    {rating = 2.5;}
+    else if (skewness>skew_list[3])
+    {rating = 3.0;}
+    else if (skewness>skew_list[4])
+    {rating = 3.5;}
+    else if (skewness<skew_list[4])
+    {rating = 4.0;}
     
     //End rating computation
 

@@ -12,6 +12,7 @@
 
 @interface ITKtestFilter : PluginFilter {
     DCMPix *pix;
+    float skewness;
 }
 
 - (ViewerController*) viewerController;
@@ -19,6 +20,9 @@
 
 - (void) biascorrect:(ITKtestFilter*)filter;
 - (void) Setpix:(DCMPix*) pix_in;
+//- (float) setSkewness;
+- (float) getSkewness;
 - (float) calculateRating:(ROI*)curROI;
+
 
 @end

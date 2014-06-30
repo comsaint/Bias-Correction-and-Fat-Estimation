@@ -111,6 +111,7 @@
         {
             float rating = [filter calculateRating:curROI];
             [self->ratingOut setFloatValue:rating];
+            [self->skewnessOut setFloatValue:[filter getSkewness]];
             break;
         }
     }
