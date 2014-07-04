@@ -89,6 +89,7 @@
 		66C2005B1952B550000FA937 /* MainNibWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 66C200581952B550000FA937 /* MainNibWindowController.xib */; };
 		66C200611952B9FF000FA937 /* MainNibWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C200601952B9FF000FA937 /* MainNibWindowController.m */; };
 		66E26F2A1954430D0077153F /* ITKtestFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 66E26F291954430D0077153F /* ITKtestFilter.m */; };
+		66E6AE3B1966BE6400C5D8EF /* mtx_export.csv in Resources */ = {isa = PBXBuildFile; fileRef = 66E6AE3A1966BE6300C5D8EF /* mtx_export.csv */; };
 		8420023212E829A200E1E9CE /* OsiriXAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8420023112E829A200E1E9CE /* OsiriXAPI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		8D5B49AE048680CD000E48DA /* ITKtest_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCF630370AF2F00C91783 /* ITKtest_Prefix.pch */; };
 		8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
@@ -184,6 +185,7 @@
 		66C200581952B550000FA937 /* MainNibWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainNibWindowController.xib; sourceTree = "<group>"; };
 		66C200601952B9FF000FA937 /* MainNibWindowController.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = MainNibWindowController.m; sourceTree = "<group>"; };
 		66E26F291954430D0077153F /* ITKtestFilter.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ITKtestFilter.m; sourceTree = "<group>"; };
+		66E6AE3A1966BE6300C5D8EF /* mtx_export.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = mtx_export.csv; sourceTree = "<group>"; };
 		8420023112E829A200E1E9CE /* OsiriXAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OsiriXAPI.framework; sourceTree = "<group>"; };
 		8D5B49B7048680CD000E48DA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB5D36050680E57E00F4007A /* ITKtest.osirixplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ITKtest.osirixplugin; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -306,6 +308,7 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				66E6AE3A1966BE6300C5D8EF /* mtx_export.csv */,
 				66C200581952B550000FA937 /* MainNibWindowController.xib */,
 				8D5B49B7048680CD000E48DA /* Info.plist */,
 				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
@@ -521,6 +524,7 @@
 			files = (
 				66C2005B1952B550000FA937 /* MainNibWindowController.xib in Resources */,
 				8D5B49B0048680CD000E48DA /* InfoPlist.strings in Resources */,
+				66E6AE3B1966BE6400C5D8EF /* mtx_export.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
