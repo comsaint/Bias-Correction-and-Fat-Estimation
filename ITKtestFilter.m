@@ -265,6 +265,16 @@
 -(void) Setpix:(DCMPix *)pix_in
 {
     pix = pix_in;
+    //also store the max and min values of the slice
+    float *fImageA=[pix fImage];
+    int x = [pix pheight]*[pix pwidth];
+    float v_min=fImageA[0],v_max=fImageA[0];
+    while (x-- >0) {
+        if (fImageA[x]<v_min){v_min=fImageA[x];}
+        if (fImageA[x]>v_max){v_max=fImageA[x];}
+    }
+    pix_max=v_max;
+    pix_min=v_min;
 }
 
 -(float) getSkewness
@@ -282,7 +292,7 @@
     float** loc=nil;
     
     float *values = [pix getROIValue: &count :curROI :loc];
-    
+    /*
     [pix computeROI:curROI
                    :nil     //mean
                    :nil     //total sum, not necessary
@@ -290,16 +300,20 @@
                    :&min
                    :&max
      ];
-     
+    */
     
-    //the easiest way to normalize is to standardise the ROI to [0,1]
-
+    //use global max and min as scaling factors
+    min=pix_min;
+    max=pix_max;
+    
+    //the easiest way to normalize is to standardise the whole image to [0,1]
     
     //linear scaling
     for (int i = 0;i<count;i++){
         values[i] = (values[i]-min)/(max-min);
     }
     
+    /*
     //calculate mean
     float mean = 0.0;
     for (int i = 0;i<count;i++){
@@ -326,20 +340,26 @@
     m3 /= count;
     
     skewness = m3/powf(m2, 1.5);
-    
+    */
     
     //Put values into histogram bins
     float *myhistogram = (float*)calloc(num_bin, sizeof(float));
+    //float myhistogram[num_bin];
+    
     //Initialize: just in case...
     for (int i =0;i<num_bin;i++){
         myhistogram[i]=0;
     }
     
     //Put values into bins
-    for (int i=0;i<count;i++){
-        for (int j=0;j<num_bin;j++){
-            if (values[i]>=j && values[i]<j+1) {
-                myhistogram[j]=myhistogram[j]+1;
+    float bin_width = (float) 1.0/num_bin;
+    for (int i=0;i<count;i++)
+    {
+        for (int j=0;j<num_bin;j++)
+        {
+            if (values[i]>=j*bin_width && values[i]<(j+1)*bin_width)
+            {
+                myhistogram[j]++;
                 //break;
             }
         }//can be rewritten into a while loop
@@ -347,10 +367,13 @@
     //Moto of engineering: if it is not broken, don't fix it.
     
     // normalize the histogram to probability [0 1]
+    float hist_cksum=0.0;
     for (int i=0;i<num_bin;i++){
         myhistogram[i]=(float) myhistogram[i]/count;
+        hist_cksum+=myhistogram[i];
     }
     
+    float rating = 0.0;//default = 0 ("Not Rated")
     
     //////////////////////////////////////////////////
     //
@@ -360,9 +383,10 @@
     
     //1. Simple skewness
     // Higher skewness -> lower rating
+    /*
     const unsigned int rating_levels = 5;//how many levels do we have?
     float skew_list[rating_levels] = {3.6,3.2,2.4,2.1,1.7};//put threshold values here
-    float rating = 0.0;//default = 0 ("Not Rated")
+    
     
     if (skewness>skew_list[0])
     {rating = 1.0;}
@@ -376,7 +400,7 @@
     {rating = 3.5;}
     else if (skewness<skew_list[4])
     {rating = 4.0;}
-    
+    */
     //End rating computation #1
     
     
@@ -420,7 +444,8 @@
     
     //Manually define ratings and histogram
     const float fat_rating[NumOfCases]={3,2,3,3,2,4,3,4,4,3};
-    float fat_hist[NumOfCases][num_bin]={
+    //const float fat_rating[NumOfCases]={1,2,3,4,5,6,7,8,9,10};
+    const float fat_hist[NumOfCases][num_bin]={
         {0,0.00015679,0.00094073,0.0018815,0.008937,0.027752,0.066479,0.10426,0.12041,0.099404,0.08592,0.063656,0.055033,0.035121,0.034337,0.023989,0.0254,0.014425,0.02101,0.014895,0.015052,0.0097209,0.011602,0.0097209,0.0086234,0.0062716,0.0064283,0.0095641,0.0054876,0.0048605,0.0070555,0.0050172,0.0048605,0.0056444,0.0042333,0.0058012,0.0040765,0.0053308,0.0031358,0.0053308,0.0023518,0.002195,0.0039197,0.0031358,0.0017247,0.00094073,0.0020383,0.0028222,0.0025086,0.0047037,0.002195,0.00062716,0.00078394,0.0026654,0.00078394,0.0017247,0.00094073,0.0012543,0.0010975,0.002195,0.002195,0.0017247,0.0015679,0.0010975,0.0010975,0.00078394,0.00062716,0.0014111,0,0.0014111,0.00062716,0.00062716,0.0010975,0.00062716,0,0.00031358,0.00062716,0.0010975,0.00062716,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0.00068766,0.0042635,0.018842,0.051437,0.10796,0.15706,0.18526,0.15376,0.10741,0.061615,0.038234,0.027094,0.011553,0.012378,0.011415,0.0079769,0.0057764,0.0031633,0.0034383,0.0038509,0.0035758,0.0023381,0.0023381,0.0024756,0.0015129,0.0016504,0.0015129,0.00055013,0.0012378,0.0022005,0.00027507,0.00027507,0.00055013,0.00096273,0.00027507,0,0.0004126,0.00055013,0,0,0.0008252,0.00027507,0.00027507,0.00027507,0,0.00027507,0.00027507,0.0004126,0,0.00013753,0,0,0.00027507,0.00013753,0.00013753,0,0.00013753,0.0004126,0,0.00027507,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,0,0.00053792,0.0064551,0.011431,0.039537,0.058903,0.10422,0.12305,0.12278,0.1014,0.071678,0.054465,0.038999,0.027434,0.022324,0.025955,0.018693,0.011834,0.012372,0.013583,0.011296,0.0092792,0.0077999,0.0044379,0.0057827,0.0053792,0.0059172,0.0052448,0.003631,0.0044379,0.0029586,0.0030931,0.0032275,0.0025551,0.0018827,0.0022862,0.0034965,0.0025551,0.003631,0.0021517,0.0018827,0.0012103,0.0016138,0.0021517,0.0013448,0.0017483,0.00053792,0.0006724,0.0014793,0.0018827,0.0013448,0.0030931,0.0012103,0.00080689,0.0010758,0.00026896,0.0006724,0.0012103,0.0018827,0.0010758,0.0016138,0.00094137,0.0010758,0.0014793,0.0013448,0.0006724,0.0012103,0.0012103,0.0006724,0.00094137,0.0010758,0.00080689,0.00080689,0.00053792,0,0.00053792,0.00013448,0.00026896,0,0,0,0.00013448,0.00013448,0.00013448,0.00013448,0.00026896,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -440,12 +465,47 @@
         dist[i]=0.0;
         for (int j=0;j<num_bin;j++)
         {
-            dist[i]+=pow(myhistogram[j]-fat_hist[i][j],2);
+            dist[i]+=powf(myhistogram[j]-fat_hist[i][j],2);
         }
     }
     
+    
     //Compare distances - NN or kNN classifier
+    /*
+    mypair dist_rate_pair[NumOfCases];
+    //Pair up dist and rating
+    for (int i=0;i<NumOfCases;i++)
+    {
+        //mypair.insert(make_pair(dist[i],fat_rating[i]));
+        dist_rate_pair[i].first=dist[i];
+        dist_rate_pair[i].second=fat_rating[i];
+    }
+    */
+    //silly bubble sort
+    rating = fat_rating[0];
+    float tmp_dist = dist[0];
+    for(int i=1;i<NumOfCases;i++)
+    {
+        if (tmp_dist>dist[i]) {
+            tmp_dist=dist[i];
+            rating = fat_rating[i];
+        }
+    }
+    //testing
+    skewness = hist_cksum;
+    
+    //NSArray *dispArray = [NSString stringWithFormat:@"%f", pix_max];
+    NSRunInformationalAlertPanel(@"Yeah",
+                                 [NSString stringWithFormat:
+                                  @"%f %f %f %f %f %f %f %f %f %f",
+                                  dist[0],dist[1],dist[2],dist[3],dist[4],dist[5],dist[6],dist[7],dist[8],dist[9]
+                                  ],
+                                 @"OK", nil, nil);
     
     return rating;
 }
+
+//-(bool) comparator:(const mypair&) l :(const mypair&) r
+//{return l.first<r.first;}
+
 @end
